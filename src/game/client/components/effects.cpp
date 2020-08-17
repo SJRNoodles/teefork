@@ -151,21 +151,69 @@ void CEffects::BulletTrail(vec2 Pos)
 	p.m_Pos = Pos;
 	p.m_LifeSpan = 0.25f + frandom()*0.25f;
 	p.m_StartSize = 8.0f;
-	p.m_EndSize = 0;
+	p.m_EndSize = 0.0f;
 	p.m_Friction = 0.7f;
 	m_pClient->m_pParticles->Add(CParticles::GROUP_PROJECTILE_TRAIL, &p);
 }
 
+void CEffects::TeeTrail(vec2 Pos, int ClientID)
+{
+
+	vec3 BloodColor(1.0f, 1.0f, 1.0f);
+
+	if (ClientID >= 0)
+	{
+		if (m_pClient->m_GameInfo.m_GameFlags & GAMEFLAG_TEAMS)
+		{
+			int ColorVal = m_pClient->m_pSkins->GetTeamColor(m_pClient->m_aClients[ClientID].m_aUseCustomColors[SKINPART_BODY], m_pClient->m_aClients[ClientID].m_aSkinPartColors[SKINPART_BODY],
+				m_pClient->m_aClients[ClientID].m_Team, SKINPART_BODY);
+			BloodColor = m_pClient->m_pSkins->GetColorV3(ColorVal);
+		}
+		else
+		{
+			if (m_pClient->m_aClients[ClientID].m_aUseCustomColors[SKINPART_BODY])
+				BloodColor = m_pClient->m_pSkins->GetColorV3(m_pClient->m_aClients[ClientID].m_aSkinPartColors[SKINPART_BODY]);
+			else
+			{
+				const CSkins::CSkinPart* s = m_pClient->m_pSkins->GetSkinPart(SKINPART_BODY, m_pClient->m_aClients[ClientID].m_SkinPartIDs[SKINPART_BODY]);
+				if (s)
+					BloodColor = s->m_BloodColor;
+			}
+		}
+	}
+	
+	CParticle p;
+	p.SetDefault();
+	p.m_Spr = SPRITE_PART_SMOKE;
+	p.m_Pos = Pos;
+	p.m_LifeSpan = 0.1f + frandom() * 0.3f;
+	p.m_StartSize = 8.0f + frandom() * 16;
+	p.m_EndSize = 0.0f;
+	p.m_Rot = frandom() * pi * 2;
+	p.m_Rotspeed = (frandom() - 0.5f) * pi;
+	p.m_Friction = 0.8f;
+	vec3 c = BloodColor * (0.75f + frandom() * 0.25f);
+	p.m_Color = vec4(c.r, c.g, c.b, 0.75f);
+	m_pClient->m_pParticles->Add(CParticles::GROUP_PROJECTILE_TRAIL, &p);
+}
+	
+		
+	
+
+	
+	
+
+
 void CEffects::PlayerSpawn(vec2 Pos)
 {
-	for(int i = 0; i < 32; i++)
+	for(int i = 0; i < 128; i++)
 	{
 		CParticle p;
 		p.SetDefault();
 		p.m_Spr = SPRITE_PART_SHELL;
 		p.m_Pos = Pos;
 		p.m_Vel = RandomDir() * (powf(frandom(), 3)*600.0f);
-		p.m_LifeSpan = 0.3f + frandom()*0.3f;
+		p.m_LifeSpan = 2.0f + frandom()*0.3f;
 		p.m_StartSize = 64.0f + frandom()*32;
 		p.m_EndSize = 0;
 		p.m_Rot = frandom()*pi*2;
@@ -177,6 +225,21 @@ void CEffects::PlayerSpawn(vec2 Pos)
 
 	}
 	m_pClient->m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_SPAWN, 1.0f, Pos);
+}
+
+void CEffects::ItemPar(vec2 Pos)
+{
+	CParticle p;
+	p.SetDefault();
+	p.m_Spr = SPRITE_PART_SHELL;
+	p.m_Vel = RandomDir() * (powf(frandom(), 3) * 600.0f);
+	p.m_Pos = Pos;
+	p.m_LifeSpan = 0.1f;
+	p.m_StartSize = 64.0f;
+	p.m_EndSize = 0;
+	p.m_Rot = frandom() * pi * 2;
+	p.m_Color = vec4(0xb5 / 55.0f, 0x50 / 55.0f, 0xcb / 255.0f, 1.0f);
+	m_pClient->m_pParticles->Add(CParticles::GROUP_PROJECTILE_TRAIL, &p);
 }
 
 void CEffects::PlayerDeath(vec2 Pos, int ClientID)
@@ -204,19 +267,19 @@ void CEffects::PlayerDeath(vec2 Pos, int ClientID)
 		}
 	}
 
-	for(int i = 0; i < 64; i++)
+	for(int i = 0; i < 128; i++)
 	{
 		CParticle p;
 		p.SetDefault();
 		p.m_Spr = SPRITE_PART_SPLAT01 + (random_int()%3);
 		p.m_Pos = Pos;
-		p.m_Vel = RandomDir() * ((frandom()+0.1f)*900.0f);
-		p.m_LifeSpan = 0.3f + frandom()*0.3f;
+		p.m_Vel = RandomDir() * ((frandom()+0.1f)*2000.0f);
+		p.m_LifeSpan = 4.0f + frandom()*0.3f;
 		p.m_StartSize = 24.0f + frandom()*16;
 		p.m_EndSize = 0;
 		p.m_Rot = frandom()*pi*2;
 		p.m_Rotspeed = (frandom()-0.5f) * pi;
-		p.m_Gravity = 800.0f;
+		p.m_Gravity = 500.0f;
 		p.m_Friction = 0.8f;
 		vec3 c = BloodColor * (0.75f + frandom()*0.25f);
 		p.m_Color = vec4(c.r, c.g, c.b, 0.75f);
@@ -243,14 +306,14 @@ void CEffects::Explosion(vec2 Pos)
 	p.SetDefault();
 	p.m_Spr = SPRITE_PART_EXPL01;
 	p.m_Pos = Pos;
-	p.m_LifeSpan = 0.4f;
-	p.m_StartSize = 150.0f;
+	p.m_LifeSpan = 0.5f;
+	p.m_StartSize = 250.0f;
 	p.m_EndSize = 0;
 	p.m_Rot = frandom()*pi*2;
 	m_pClient->m_pParticles->Add(CParticles::GROUP_EXPLOSIONS, &p);
 
 	// add the smoke
-	for(int i = 0; i < 24; i++)
+	for(int i = 0; i < 128; i++)
 	{
 		CParticle p;
 		p.SetDefault();

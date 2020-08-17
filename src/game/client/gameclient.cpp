@@ -73,9 +73,9 @@ inline void AppendDecimals(char *pBuf, int Size, int Time, int Precision)
 void FormatTime(char *pBuf, int Size, int Time, int Precision)
 {
 	if(Time < 0)
-		str_copy(pBuf, "-:--", Size);
+		str_copy(pBuf, "Time: -:--", Size);
 	else
-		str_format(pBuf, Size, "%02d:%02d", Time / (60 * 1000), (Time / 1000) % 60);
+		str_format(pBuf, Size, "Time: %02d:%02d", Time / (60 * 1000), (Time / 1000) % 60);
 	AppendDecimals(pBuf, Size, Time, Precision);
 }
 
@@ -187,10 +187,10 @@ struct CGameMsg
 };
 
 static CGameMsg gs_GameMsgList[NUM_GAMEMSGS] = {
-	{/*GAMEMSG_TEAM_SWAP*/ DO_CHAT, PARA_NONE, "Teams were swapped"}, // Localize("Teams were swapped")
+	{/*GAMEMSG_TEAM_SWAP*/ DO_CHAT, PARA_NONE, "The teams have been swapped!"}, // Localize("Teams were swapped")
 	{/*GAMEMSG_SPEC_INVALIDID*/ DO_CHAT, PARA_NONE, "Invalid spectator id used"},   //!
-	{/*GAMEMSG_TEAM_SHUFFLE*/ DO_CHAT, PARA_NONE, "Teams were shuffled"}, // Localize("Teams were shuffled")
-	{/*GAMEMSG_TEAM_BALANCE*/ DO_CHAT, PARA_NONE, "Teams have been balanced"}, // Localize("Teams have been balanced")
+	{/*GAMEMSG_TEAM_SHUFFLE*/ DO_CHAT, PARA_NONE, "Teams have been shuffled!"}, // Localize("Teams were shuffled")
+	{/*GAMEMSG_TEAM_BALANCE*/ DO_CHAT, PARA_NONE, "Teams have been balanced!"}, // Localize("Teams have been balanced")
 	{/*GAMEMSG_CTF_DROP*/ DO_SPECIAL, PARA_NONE, ""},	// special - play ctf drop sound
 	{/*GAMEMSG_CTF_RETURN*/ DO_SPECIAL, PARA_NONE, ""},	// special - play ctf return sound
 
@@ -698,10 +698,10 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker)
 					const char *pMsg;
 					switch(GetStrTeam(aParaI[0], TeamPlay))
 					{
-					case STR_TEAM_GAME: pMsg = Localize("All players were moved to the game"); break;
-					case STR_TEAM_RED: pMsg = Localize("All players were moved to the red team"); break;
-					case STR_TEAM_BLUE: pMsg = Localize("All players were moved to the blue team"); break;
-					case STR_TEAM_SPECTATORS: pMsg = Localize("All players were moved to the spectators"); break;
+					case STR_TEAM_GAME: pMsg = Localize("All players were moved to the game!"); break;
+					case STR_TEAM_RED: pMsg = Localize("All players were moved to the red team!"); break;
+					case STR_TEAM_BLUE: pMsg = Localize("All players were moved to the blue team!"); break;
+					case STR_TEAM_SPECTATORS: pMsg = Localize("All players were moved to the spectators!"); break;
 					}
 					m_pBroadcast->DoBroadcast(pMsg);
 				}
@@ -711,8 +711,8 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker)
 					const char *pMsg = "";
 					switch(GetStrTeam(aParaI[0], TeamPlay))
 					{
-					case STR_TEAM_RED: pMsg = Localize("You were moved to the red team due to team balancing"); break;
-					case STR_TEAM_BLUE: pMsg = Localize("You were moved to the blue team due to team balancing"); break;
+					case STR_TEAM_RED: pMsg = Localize("You were moved due to the team balancing."); break;
+					case STR_TEAM_BLUE: pMsg = Localize("You were moved due to the team balancing."); break;
 					}
 					m_pBroadcast->DoBroadcast(pMsg);
 				}
@@ -749,22 +749,22 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker)
 				{
 					if(aParaI[0])
 					{
-						str_format(aBuf, sizeof(aBuf), Localize("The blue flag was captured by '%s' (%.2f seconds)"), aLabel, Time);
+						str_format(aBuf, sizeof(aBuf), Localize("Blue team's flag got captured thanks to '%s' who did it in %.2f seconds!"), aLabel, Time);
 					}
 					else
 					{
-						str_format(aBuf, sizeof(aBuf), Localize("The red flag was captured by '%s' (%.2f seconds)"), aLabel, Time);
+						str_format(aBuf, sizeof(aBuf), Localize("Red team's flag got captured thanks to '%s' who did it in %.2f seconds!"), aLabel, Time);
 					}
 				}
 				else
 				{
 					if(aParaI[0])
 					{
-						str_format(aBuf, sizeof(aBuf), Localize("The blue flag was captured by '%s'"), aLabel);
+						str_format(aBuf, sizeof(aBuf), Localize("Blue team's flag got captured thanks to '%s'"), aLabel);
 					}
 					else
 					{
-						str_format(aBuf, sizeof(aBuf), Localize("The red flag was captured by '%s'"), aLabel);
+						str_format(aBuf, sizeof(aBuf), Localize("Red team's flag got captured thanks to '%s'"), aLabel);
 					}
 				}
 				m_pChat->AddLine(aBuf);
@@ -865,7 +865,7 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker)
 			char aBuf[128];
 			char aLabel[64];
 			GetPlayerLabel(aLabel, sizeof(aLabel), pMsg->m_ClientID, m_aClients[pMsg->m_ClientID].m_aName);
-			str_format(aBuf, sizeof(aBuf), Localize("%s is muted by you"), aLabel);
+			str_format(aBuf, sizeof(aBuf), Localize("%s is muted."), aLabel);
 			m_pChat->AddLine(aBuf, CChat::CLIENT_MSG);
 		}
 
@@ -1095,20 +1095,23 @@ void CGameClient::ProcessTriggeredEvents(int Events, vec2 Pos)
 	if(m_SuppressEvents)
 		return;
 
-	if(Events&COREEVENTFLAG_GROUND_JUMP)
+	if (Events & COREEVENTFLAG_GROUND_JUMP)
 		m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_JUMP, 1.0f, Pos);
+	
+	m_pEffects->TeeTrail(Pos, 0);
 	if(Events&COREEVENTFLAG_AIR_JUMP)
 		m_pEffects->AirJump(Pos);
 	if(Events&COREEVENTFLAG_HOOK_ATTACH_PLAYER)
 		m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_HOOK_ATTACH_PLAYER, 1.0f, Pos);
+	    
 	if(Events&COREEVENTFLAG_HOOK_ATTACH_GROUND)
 		m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_HOOK_ATTACH_GROUND, 1.0f, Pos);
 	if(Events&COREEVENTFLAG_HOOK_HIT_NOHOOK)
 		m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_HOOK_NOATTACH, 1.0f, Pos);
-	/*if(Events&COREEVENTFLAG_HOOK_LAUNCH)
+	/*if(Events&COREEVENTFLAG_HOOK_LAUNCH)                                              
 		m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_HOOK_LOOP, 1.0f, Pos);
 	if(Events&COREEVENTFLAG_HOOK_RETRACT)
-		m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_JUMP, 1.0f, Pos);*/
+		m_pSounds->PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_JUMP, 1.0f, Pos);*/ 
 }
 
 typedef bool (*FCompareFunc)(const CNetObj_PlayerInfo*, const CNetObj_PlayerInfo*);
@@ -1755,10 +1758,10 @@ void CGameClient::DoEnterMessage(const char *pName, int ClientID, int Team)
 	GetPlayerLabel(aLabel, sizeof(aLabel), ClientID, pName);
 	switch(GetStrTeam(Team, m_GameInfo.m_GameFlags&GAMEFLAG_TEAMS))
 	{
-	case STR_TEAM_GAME: str_format(aBuf, sizeof(aBuf), Localize("'%s' entered and joined the game"), aLabel); break;
-	case STR_TEAM_RED: str_format(aBuf, sizeof(aBuf), Localize("'%s' entered and joined the red team"), aLabel); break;
-	case STR_TEAM_BLUE: str_format(aBuf, sizeof(aBuf), Localize("'%s' entered and joined the blue team"), aLabel); break;
-	case STR_TEAM_SPECTATORS: str_format(aBuf, sizeof(aBuf), Localize("'%s' entered and joined the spectators"), aLabel); break;
+	case STR_TEAM_GAME: str_format(aBuf, sizeof(aBuf), Localize("Say hello to %s !"), aLabel); break;
+	case STR_TEAM_RED: str_format(aBuf, sizeof(aBuf), Localize("%s joined and went Red!"), aLabel); break;
+	case STR_TEAM_BLUE: str_format(aBuf, sizeof(aBuf), Localize("%s joined and went Blue!"), aLabel); break;
+	case STR_TEAM_SPECTATORS: str_format(aBuf, sizeof(aBuf), Localize("%s joined and went to spectate!"), aLabel); break;
 	}
 	m_pChat->AddLine(aBuf);
 }
@@ -1781,10 +1784,10 @@ void CGameClient::DoTeamChangeMessage(const char *pName, int ClientID, int Team)
 	GetPlayerLabel(aLabel, sizeof(aLabel), ClientID, pName);
 	switch(GetStrTeam(Team, m_GameInfo.m_GameFlags&GAMEFLAG_TEAMS))
 	{
-	case STR_TEAM_GAME: str_format(aBuf, sizeof(aBuf), Localize("'%s' joined the game"), aLabel); break;
-	case STR_TEAM_RED: str_format(aBuf, sizeof(aBuf), Localize("'%s' joined the red team"), aLabel); break;
-	case STR_TEAM_BLUE: str_format(aBuf, sizeof(aBuf), Localize("'%s' joined the blue team"), aLabel); break;
-	case STR_TEAM_SPECTATORS: str_format(aBuf, sizeof(aBuf), Localize("'%s' joined the spectators"), aLabel); break;
+	case STR_TEAM_GAME: str_format(aBuf, sizeof(aBuf), Localize("%s joined the game!"), aLabel); break;
+	case STR_TEAM_RED: str_format(aBuf, sizeof(aBuf), Localize("%s decided to go to red team!"), aLabel); break;
+	case STR_TEAM_BLUE: str_format(aBuf, sizeof(aBuf), Localize("%s decided to go to blue team!"), aLabel); break;
+	case STR_TEAM_SPECTATORS: str_format(aBuf, sizeof(aBuf), Localize("%s decided to watch the fun!"), aLabel); break;
 	}
 	m_pChat->AddLine(aBuf);
 }

@@ -79,7 +79,7 @@ CUIRect *CUI::Screen()
 	float Aspect = Graphics()->ScreenAspect();
 	float w, h;
 
-	h = 600;
+	h = 500;
 	w = Aspect*h;
 
 	m_Screen.w = w;

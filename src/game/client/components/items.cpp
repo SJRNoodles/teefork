@@ -119,12 +119,15 @@ void CItems::RenderPickup(const CNetObj_Pickup *pPrev, const CNetObj_Pickup *pCu
 	{
 	case PICKUP_GRENADE:
 		Size = g_pData->m_Weapons.m_aId[WEAPON_GRENADE].m_VisualSize;
+		m_pClient->m_pEffects->ItemPar(Pos);
 		break;
 	case PICKUP_SHOTGUN:
 		Size = g_pData->m_Weapons.m_aId[WEAPON_SHOTGUN].m_VisualSize;
+		m_pClient->m_pEffects->ItemPar(Pos);
 		break;
 	case PICKUP_LASER:
 		Size = g_pData->m_Weapons.m_aId[WEAPON_LASER].m_VisualSize;
+		m_pClient->m_pEffects->ItemPar(Pos);
 		break;
 	case PICKUP_NINJA:
 		m_pClient->m_pEffects->PowerupShine(Pos, vec2(96,18));

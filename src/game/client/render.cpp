@@ -349,7 +349,7 @@ void CRenderTools::RenderTee(CAnimState *pAnim, const CTeeRenderInfo *pInfo, int
 
 		for(int f = 0; f < 2; f++)
 		{
-			float AnimScale = pInfo->m_Size * 1.0f/64.0f;
+			float AnimScale = pInfo->m_Size * 1.1f/64.0f;
 			float BaseSize = pInfo->m_Size;
 			if(f == 1)
 			{
@@ -479,10 +479,10 @@ void CRenderTools::RenderTee(CAnimState *pAnim, const CTeeRenderInfo *pInfo, int
 							break;
 					}
 
-					float EyeScale = BaseSize*0.60f;
+					float EyeScale = BaseSize*0.70f;
 					float h = Emote == EMOTE_BLINK ? BaseSize*0.15f/2.0f : EyeScale/2.0f;
-					vec2 Offset = vec2(Direction.x*0.125f, -0.05f+Direction.y*0.10f)*BaseSize;
-					IGraphics::CQuadItem QuadItem(BodyPos.x+Offset.x, BodyPos.y+Offset.y, EyeScale, h);
+					vec2 Offset = vec2(Direction.x*0.100f, -0.05f+Direction.y*0.100f)*BaseSize;
+					IGraphics::CQuadItem QuadItem(BodyPos.x+Offset.x, BodyPos.y+Offset.y, BaseSize * 0.60f , h);
 					Graphics()->QuadsDraw(&QuadItem, 1);
 				}
 				Graphics()->QuadsEnd();
@@ -520,7 +520,7 @@ void CRenderTools::RenderTee(CAnimState *pAnim, const CTeeRenderInfo *pInfo, int
 			Graphics()->QuadsBegin();
 			CAnimKeyframe *pFoot = f ? pAnim->GetFrontFoot() : pAnim->GetBackFoot();
 
-			float w = BaseSize/2.1f;
+			float w = BaseSize/1.9f;
 			float h = w;
 
 			Graphics()->QuadsSetRotation(pFoot->m_Angle*pi*2);
@@ -551,7 +551,7 @@ void CRenderTools::RenderTeeHand(const CTeeRenderInfo *pInfo, vec2 CenterPos, ve
 								 vec2 PostRotOffset)
 {
 	// in-game hand size is 15 when tee size is 64
-	float BaseSize = 15.0f * (pInfo->m_Size / 64.0f);
+	float BaseSize = 16.0f * (pInfo->m_Size / 64.0f);
 
 	vec2 HandPos = CenterPos + Dir;
 	float Angle = angle(Dir);
@@ -673,11 +673,11 @@ void CRenderTools::DrawClientID(ITextRender* pTextRender, CTextCursor* pCursor, 
 	// TODO: make a simple text one (no shadow)
 	pTextRender->TextShadowed(pCursor, aBuff, -1, vec2(0,0), vec4(0,0,0,0), TextColor);
 
-	pCursor->m_X = PrevX + Rect.w + 0.2f * FontSize;
+	pCursor->m_X = PrevX + Rect.w + 0.5f * FontSize;
 }
 
 float CRenderTools::GetClientIdRectSize(float FontSize)
 {
 	if(!m_pConfig->m_ClShowUserId) return 0;
-	return 1.4f * FontSize + 0.2f * FontSize;
+	return 1.4f * FontSize + 0.5f * FontSize;
 }

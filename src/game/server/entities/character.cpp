@@ -11,6 +11,8 @@
 #include "laser.h"
 #include "projectile.h"
 
+#include "components/effects.h"
+
 //input count
 struct CInputCount
 {
@@ -348,6 +350,7 @@ void CCharacter::FireWeapon()
 				g_pData->m_Weapons.m_Gun.m_pBase->m_Damage, false, 0, -1, WEAPON_GUN);
 
 			GameServer()->CreateSound(m_Pos, SOUND_GUN_FIRE);
+			
 		} break;
 
 		case WEAPON_SHOTGUN:
@@ -787,7 +790,7 @@ bool CCharacter::TakeDamage(vec2 Force, vec2 Source, int Dmg, int From, int Weap
 		// set attacker's face to happy (taunt!)
 		if (From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
 		{
-			CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
+			CCharacter* pChr = GameServer()->m_apPlayers[From]->GetCharacter();
 			if (pChr)
 			{
 				pChr->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());

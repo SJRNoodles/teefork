@@ -20,6 +20,8 @@ public:
 	void SmokeTrail(vec2 Pos, vec2 Vel);
 	void SkidTrail(vec2 Pos, vec2 Vel);
 	void BulletTrail(vec2 Pos);
+	void TeeTrail(vec2 Pos, int ClientID);
+	void ItemPar(vec2 Pos);
 	void PlayerSpawn(vec2 Pos);
 	void PlayerDeath(vec2 Pos, int ClientID);
 	void Explosion(vec2 Pos);
